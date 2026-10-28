@@ -22,7 +22,12 @@ import {
   IonSelect,
   IonSelectOption,
   IonButton,
-  ToastController
+  IonButtons,
+  IonModal,
+  IonInput,
+  IonDatetime,
+  ToastController,
+  AlertController
 } from '@ionic/angular/standalone';
 import { Specialist } from '../models/specialist.model';
 import { Appointment } from '../models/appointment.model';
@@ -54,12 +59,17 @@ import { SpecialistsService } from '../services/specialists.service';
     IonBadge,
     IonSelect,
     IonSelectOption,
-    IonButton
+    IonButton,
+    IonButtons,
+    IonModal,
+    IonInput,
+    IonDatetime
   ]
 })
 export class HomePage implements OnInit {
   private readonly specialistsService = inject(SpecialistsService);
   private readonly toastCtrl = inject(ToastController);
+  private readonly alertCtrl = inject(AlertController);
 
   specialists: Specialist[] = [];
   filteredSpecialists: Specialist[] = [];
@@ -68,6 +78,12 @@ export class HomePage implements OnInit {
   companies: string[] = [];
   selectedCity: string = '';
   selectedCompany: string = '';
+
+  isModalOpen: boolean = false;
+  selectedSpecialist: Specialist | null = null;
+  patientName: string = '';
+  appointmentDateTime: string = '';
+  minDateTime: string = new Date(Date.now() - new Date().getTimezoneOffset() * 60000).toISOString().slice(0, 16);
 
   ngOnInit(): void {
     this.specialistsService.getSpecialists().subscribe({
@@ -113,6 +129,69 @@ export class HomePage implements OnInit {
 
   countAppointments(specialistId: number): number {
     return this.appointments.filter(appointment => appointment.specialistId === specialistId).length;
+  }
+
+  openModal(specialist: Specialist): void {
+    this.selectedSpecialist = specialist;
+    this.patientName = '';
+    this.appointmentDateTime = '';
+    this.isModalOpen = true;
+  }
+
+  closeModal(): void {
+    this.isModalOpen = false;
+  }
+
+  async scheduleAppointment(): Promise<void> {
+    if (!this.selectedSpecialist || !this.patientName.trim() || !this.appointmentDateTime) {
+      await this.showToast('Ingresa el nombre del paciente y la fecha de la cita', 'danger');
+      return;
+    }
+
+    if (this.patientName.trim().length < 3) {
+      await this.showToast('El nombre del paciente debe tener al menos 3 letras', 'danger');
+      return;
+    }
+
+    if (/\d/.test(this.patientName)) {
+      await this.showToast('El nombre del paciente no puede tener números', 'danger');
+      return;
+    }
+
+    const specialist = this.selectedSpecialist;
+    const alert = await this.alertCtrl.create({
+      header: 'Confirmar reserva',
+      message: `
+        <strong>Especialista:</strong> ${specialist.fullName}<br>
+        <strong>Paciente:</strong> ${this.patientName.trim()}<br>
+        <strong>Fecha:</strong> ${new Date(this.appointmentDateTime).toLocaleString('es-CO')}
+      `,
+      buttons: [
+        {
+          text: 'Cancelar',
+          role: 'cancel'
+        },
+        {
+          text: 'Confirmar',
+          handler: () => {
+            this.confirmAppointment(specialist);
+          }
+        }
+      ]
+    });
+    await alert.present();
+  }
+
+  async confirmAppointment(specialist: Specialist): Promise<void> {
+    this.appointments.push({
+      id: this.appointments.length + 1,
+      specialistId: specialist.id,
+      specialistName: specialist.fullName,
+      patientName: this.patientName.trim(),
+      dateTime: this.appointmentDateTime
+    });
+    this.closeModal();
+    await this.showToast(`Cita agendada con ${specialist.fullName}`, 'success');
   }
 
   async showToast(message: string, color: 'success' | 'danger'): Promise<void> {
