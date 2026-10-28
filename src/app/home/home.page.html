@@ -1,193 +1,55 @@
-<ion-header [translucent]="true" class="ion-no-border">
+<ion-header>
   <ion-toolbar color="primary">
-    <ion-buttons slot="start">
-      <ion-icon name="phone-portrait-outline" class="toolbar-brand-icon ion-padding-start"></ion-icon>
-    </ion-buttons>
-    <ion-title>
-      <div class="header-titles">
-        <span class="institution-sub">Universidad Surcolombiana</span>
-        <span class="page-main-title">Semana 10: Formularios Móviles</span>
-      </div>
-    </ion-title>
+    <ion-title>Centro de Citas Médicas</ion-title>
   </ion-toolbar>
 </ion-header>
 
-<ion-content [fullscreen]="true" class="ion-padding app-content-wrapper">
+<ion-content class="ion-padding">
+  <ion-grid>
+    <ion-row>
+      <ion-col size="12" size-md="4">
+        <ion-card>
+          <ion-card-header>
+            <ion-card-subtitle>Especialistas</ion-card-subtitle>
+            <ion-card-title>{{ filteredSpecialists.length }} de {{ specialists.length }}</ion-card-title>
+          </ion-card-header>
+        </ion-card>
+      </ion-col>
+      <ion-col size="12" size-md="4">
+        <ion-card>
+          <ion-card-header>
+            <ion-card-subtitle>Citas agendadas</ion-card-subtitle>
+            <ion-card-title>{{ appointments.length }}</ion-card-title>
+          </ion-card-header>
+        </ion-card>
+      </ion-col>
+      <ion-col size="12" size-md="4">
+        <ion-card>
+          <ion-card-header>
+            <ion-card-subtitle>Ciudades atendidas</ion-card-subtitle>
+            <ion-card-title>{{ countCities() }}</ion-card-title>
+          </ion-card-header>
+        </ion-card>
+      </ion-col>
+    </ion-row>
+  </ion-grid>
 
-  <!-- Presentation Card Banner -->
-  <ion-card class="presentation-card">
-    <ion-card-header>
-      <ion-card-title>Formulario de Solicitud y Reserva Académica</ion-card-title>
-    </ion-card-header>
-    <ion-card-content>
-      Aprende la captura táctil de datos, sincronización reactiva con
-      <code>[(ngModel)]</code> y controladores visuales de retroalimentación en Ionic 8 + Angular 18.
-    </ion-card-content>
-  </ion-card>
-
-  <!-- Interactive Form Container -->
-  <ion-card class="form-card">
-    <ion-card-header>
-      <ion-card-title class="form-title">
-        <ion-icon name="create-outline" color="primary"></ion-icon>
-        Datos de la Solicitud
-      </ion-card-title>
-    </ion-card-header>
-
-    <ion-card-content>
-      <ion-list lines="inset">
-
-        <!-- 1. Full Name Input -->
-        <ion-item class="custom-input-item">
-          <ion-input label="Nombre Completo *" labelPlacement="floating" type="text"
-            placeholder="Ej: Daniel Gómez Perdomo" [(ngModel)]="formData.fullName" clearInput="true" required>
-          </ion-input>
-        </ion-item>
-
-        <!-- 2. Service Category Select -->
-        <ion-item class="custom-input-item">
-          <ion-select label="Tipo de Servicio *" labelPlacement="floating" placeholder="Seleccione una categoría"
-            [(ngModel)]="formData.serviceType" interface="action-sheet">
-            <ion-select-option *ngFor="let srv of services" [value]="srv.id">
-              {{ srv.name }}
-            </ion-select-option>
-          </ion-select>
-        </ion-item>
-
-        <ion-item class="custom-input-item">
-          <ion-select label="Departamento *" labelPlacement="floating" placeholder="Seleccione un departamento"
-            [(ngModel)]="formData.departmentId" (ionChange)="onDepartmentChange($event)" interface="action-sheet">
-            <ion-select-option *ngFor="let department of departments" [value]="department.id">
-              {{ department.name }}
-            </ion-select-option>
-          </ion-select>
-        </ion-item>
-
-        <ion-item class="custom-input-item">
-          <ion-select label="Municipio *" labelPlacement="floating" placeholder="Seleccione un municipio"
-            [(ngModel)]="formData.cityId" [disabled]="!formData.departmentId" interface="action-sheet">
-            <ion-select-option *ngFor="let city of cities" [value]="city.id">
-              {{ city.name }}
-            </ion-select-option>
-          </ion-select>
-        </ion-item>
-
-        <!-- 3. SMS Notifications Toggle -->
-        <ion-item class="custom-input-item">
-          <ion-toggle [(ngModel)]="formData.smsNotifications" color="secondary" justify="space-between">
-            <div class="toggle-label-wrap">
-              <strong>Notificaciones SMS</strong>
-              <p class="toggle-help">Recibir alertas de confirmación al móvil</p>
-            </div>
-          </ion-toggle>
-        </ion-item>
-
-        <!-- 4. Terms and Conditions Checkbox -->
-        <ion-item class="custom-input-item terms-item">
-          <ion-checkbox [(ngModel)]="formData.acceptTerms" color="primary" justify="start" labelPlacement="end">
-            <span class="terms-text">
-              Acepto los términos y el reglamento del laboratorio *
-            </span>
-          </ion-checkbox>
-        </ion-item>
-
-        <!-- Modal Trigger Link -->
-        <div class="modal-link-container">
-          <ion-button fill="clear" size="small" color="secondary" (click)="setTermsModalOpen(true)">
-            <ion-icon name="document-text-outline" slot="start"></ion-icon>
-            Ver Términos y Condiciones
-          </ion-button>
-        </div>
-
-      </ion-list>
-
-      <!-- Action Button -->
-      <div class="submit-action-container ion-padding-top">
-        <ion-button expand="block" color="primary" shape="round" class="submit-button" (click)="enviarSolicitud()">
-          <ion-icon name="paper-plane-outline" slot="start"></ion-icon>
-          Enviar Solicitud
-        </ion-button>
-      </div>
-
-    </ion-card-content>
-  </ion-card>
-
-  <ion-card *ngIf="selectedDepartment">
-    <ion-card-header>
-      <ion-card-subtitle color="primary">Departamento seleccionado</ion-card-subtitle>
-      <ion-card-title>{{ selectedDepartment.name }}</ion-card-title>
-    </ion-card-header>
-    <ion-card-content>
-      <p>Población: {{ selectedDepartment.population.toLocaleString('es-CO') }} habitantes</p>
-      <p>Superficie: {{ selectedDepartment.surface.toLocaleString('es-CO') }} km²</p>
-      <p>Municipios: {{ selectedDepartment.municipalities }}</p>
-    </ion-card-content>
-  </ion-card>
-
-  <!-- Live Model Inspector (Visual Pedagogy for [(ngModel)]) -->
-  <ion-card class="inspector-card">
-    <ion-card-header>
-      <ion-card-subtitle color="primary">Inspector Didáctico en Tiempo Real</ion-card-subtitle>
-      <ion-card-title class="inspector-title">Estado del Objeto TypeScript (TS)</ion-card-title>
-    </ion-card-header>
-    <ion-card-content>
-      <p class="inspector-note">
-        Observa cómo <code>[(ngModel)]</code> actualiza instantáneamente estas variables en memoria sin necesidad de
-        eventos manuales:
-      </p>
-      <pre class="code-preview"><code>{{ formData | json }}</code></pre>
-    </ion-card-content>
-  </ion-card>
-
-  <!-- Modal Component: Terms & Conditions -->
-  <ion-modal [isOpen]="isTermsModalOpen" (didDismiss)="setTermsModalOpen(false)">
-    <ng-template>
-      <ion-header>
-        <ion-toolbar color="primary">
-          <ion-title>Reglamento y Términos</ion-title>
-          <ion-buttons slot="end">
-            <ion-button (click)="setTermsModalOpen(false)">
-              <ion-icon name="close-circle-outline"></ion-icon>
-            </ion-button>
-          </ion-buttons>
-        </ion-toolbar>
-      </ion-header>
-
-      <ion-content class="ion-padding">
-        <div class="modal-body-content">
-          <h3>Universidad Surcolombiana - Facultad de Ingeniería</h3>
-          <p><strong>Laboratorio de Programación de Dispositivos Móviles (Semana 10)</strong></p>
-          <hr />
-          <p>
-            Al diligenciar este formulario, el estudiante confirma su compromiso con las siguientes políticas
-            académicas:
-          </p>
-          <ol class="terms-list">
-            <li>
-              <strong>Puntualidad en la entrega:</strong> La práctica es requisito previo y formativo para la Evaluación
-              Práctica del Tercer Corte (Semana 11 - 20%).
-            </li>
-            <li>
-              <strong>Integridad académica:</strong> El código desarrollado debe ser de autoría propia implementando
-              buenas prácticas, separación de responsabilidades y tipado estricto.
-            </li>
-            <li>
-              <strong>Uso responsable de los recursos:</strong> Respetar los horarios de préstamo de dispositivos
-              físicos y simuladores institucionales.
-            </li>
-            <li>
-              <strong>Tratamiento de datos:</strong> La información capturada mediante <code>ion-input</code> y
-              controladores móviles será utilizada exclusivamente con fines formativos y de retroalimentación
-              evaluativa.
-            </li>
-          </ol>
-
-          <ion-button expand="block" color="secondary" class="ion-margin-top" (click)="setTermsModalOpen(false)">
-            Entendido y Aceptar
-          </ion-button>
-        </div>
-      </ion-content>
-    </ng-template>
-  </ion-modal>
-
+  <ion-list>
+    <ion-item button *ngFor="let specialist of filteredSpecialists">
+      <ion-avatar slot="start">
+        <img [src]="specialist.avatarUrl" [alt]="specialist.fullName" />
+      </ion-avatar>
+      <ion-label>
+        <h2>{{ specialist.fullName }}</h2>
+        <p>{{ specialist.company }}</p>
+        <p>{{ specialist.city }}</p>
+      </ion-label>
+      <ion-badge slot="end" [color]="countAppointments(specialist.id) === 0 ? 'success' : 'warning'">
+        {{ countAppointments(specialist.id) === 0 ? 'Disponible' : 'Con cita' }}
+      </ion-badge>
+    </ion-item>
+    <ion-item *ngIf="filteredSpecialists.length === 0">
+      <ion-label>No hay especialistas con esos filtros</ion-label>
+    </ion-item>
+  </ion-list>
 </ion-content>
