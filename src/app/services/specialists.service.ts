@@ -26,7 +26,7 @@ export class SpecialistsService {
     );
   }
 
-  private getLastName(fullName: string): string {
+  getLastName(fullName: string): string {
     const suffixes = ['II', 'III', 'IV', 'V', 'Jr', 'Sr'];
     const words = fullName
       .split(' ')

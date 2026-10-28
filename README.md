@@ -16,7 +16,7 @@ Como la API no trae apellido, este se deriva del nombre completo partiéndolo po
 
 ## Cómo ejecutarlo
 
-Se necesita Node.js 18.19 o superior con npm.
+Se necesita Node.js 20 o 22 con npm.
 
 ```bash
 git clone https://github.com/JuanFierro15/tercer-parcial-citas-medicas.git
