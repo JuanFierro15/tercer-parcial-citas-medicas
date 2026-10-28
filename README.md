@@ -14,6 +14,38 @@ Los datos se obtienen de `GET https://jsonplaceholder.typicode.com/users`, que d
 
 Como la API no trae apellido, este se deriva del nombre completo partiéndolo por espacios y descartando los títulos que terminan en punto, como "Mrs.", y los sufijos como la "V" de "Nicholas Runolfsdottir V", para quedarse con la última palabra. Con eso, la regla obligatoria del parcial se cumple filtrando con `filter()` por ciudad y compañía sobre la lista original, que nunca se modifica, y ordenando el resultado alfabéticamente por apellido con `sort()` y `localeCompare`. La API tampoco tiene citas, por lo que estas se guardan en memoria mientras la aplicación está abierta y se pierden al recargar la página.
 
+## Estructura del proyecto
+
+```
+src/
+  index.html
+  main.ts
+  global.scss
+  theme/
+    variables.scss
+  app/
+    app.component.ts
+    app.component.html
+    app.routes.ts
+    home/
+      home.page.ts
+      home.page.html
+    models/
+      api-user.model.ts
+      specialist.model.ts
+      appointment.model.ts
+    services/
+      specialists.service.ts
+```
+
+El código está organizado por responsabilidades, de modo que cada carpeta de `src/app` cumple una sola función y los datos siempre recorren el mismo camino: el servicio los pide a la API y los transforma, la página los guarda y los procesa, y la plantilla los muestra.
+
+Primeramente, en la raíz de `src` está `main.ts`, que arranca la aplicación standalone sin necesidad de un `AppModule` y registra en un solo lugar los proveedores que usa todo el proyecto, es decir, `provideIonicAngular` con `innerHTMLTemplatesEnabled` activado para que el mensaje del Alert pueda llevar negritas y saltos de línea, `provideHttpClient` para las peticiones HTTP y `provideRouter` con las rutas. Junto a él están `index.html`, que es la página donde se monta la aplicación, `global.scss`, que carga los estilos base de Ionic, y `theme/variables.scss`, donde se definen los colores del tema, como el `primary` vino tinto que usan las barras superiores. Dentro de `src/app`, `app.component` es el contenedor raíz con `ion-app` e `ion-router-outlet`, y `app.routes.ts` redirige la ruta vacía a `home`, cuya página se carga de forma diferida con `loadComponent`.
+
+Ahora bien, con lo que respecta a las carpetas que se trabajaron en el parcial, `models` contiene solo interfaces de TypeScript, sin lógica: `ApiUser` describe la parte de la respuesta de la API que se usa, `Specialist` es el modelo propio de la aplicación, plano y con el apellido y el avatar ya calculados, y `Appointment` representa una cita guardada en memoria. Tener `ApiUser` separado de `Specialist` hace que, si la API cambiara su formato, solo habría que ajustar la transformación del servicio y no la página. Por otro lado, en `services` está `SpecialistsService`, que es el único archivo que conoce la URL de la API, hace el GET con `HttpClient` y le entrega a la página un `Observable<Specialist[]>` ya transformado, con lo cual la página nunca trabaja con el formato original de los datos.
+
+Por último, `home` tiene la única página de la aplicación, dividida en dos archivos: `home.page.ts` guarda el estado (la lista original, la filtrada, las citas y los valores de los filtros) y contiene la lógica de negocio con `filter()`, `map()`, `reduce()` y `sort()`, además del manejo del modal, el Alert y los Toast, mientras que `home.page.html` se encarga solamente de mostrar ese estado con componentes de Ionic y de enlazar los controles con `[(ngModel)]`. La página no tiene hoja de estilos propia, ya que toda su apariencia sale de los atributos de Ionic, como `color`, `fill` o `size-md`.
+
 ## Cómo ejecutarlo
 
 Se necesita Node.js 20 o 22 con npm.
