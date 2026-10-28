@@ -27,9 +27,10 @@ export class SpecialistsService {
   }
 
   private getLastName(fullName: string): string {
+    const suffixes = ['II', 'III', 'IV', 'V', 'Jr', 'Sr'];
     const words = fullName
       .split(' ')
-      .filter(word => !word.endsWith('.') && !/^([IVX]+|Jr|Sr)$/.test(word));
+      .filter(word => !word.endsWith('.') && !suffixes.includes(word));
     return words[words.length - 1] ?? fullName;
   }
 }

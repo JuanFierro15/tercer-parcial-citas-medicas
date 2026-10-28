@@ -1,5 +1,6 @@
 import { Component, OnInit, inject } from '@angular/core';
 import { CommonModule } from '@angular/common';
+import { FormsModule } from '@angular/forms';
 import {
   IonHeader,
   IonToolbar,
@@ -12,11 +13,15 @@ import {
   IonCardHeader,
   IonCardTitle,
   IonCardSubtitle,
+  IonCardContent,
   IonList,
   IonItem,
   IonAvatar,
   IonLabel,
   IonBadge,
+  IonSelect,
+  IonSelectOption,
+  IonButton,
   ToastController
 } from '@ionic/angular/standalone';
 import { Specialist } from '../models/specialist.model';
@@ -29,6 +34,7 @@ import { SpecialistsService } from '../services/specialists.service';
   standalone: true,
   imports: [
     CommonModule,
+    FormsModule,
     IonHeader,
     IonToolbar,
     IonTitle,
@@ -40,11 +46,15 @@ import { SpecialistsService } from '../services/specialists.service';
     IonCardHeader,
     IonCardTitle,
     IonCardSubtitle,
+    IonCardContent,
     IonList,
     IonItem,
     IonAvatar,
     IonLabel,
-    IonBadge
+    IonBadge,
+    IonSelect,
+    IonSelectOption,
+    IonButton
   ]
 })
 export class HomePage implements OnInit {
@@ -54,17 +64,44 @@ export class HomePage implements OnInit {
   specialists: Specialist[] = [];
   filteredSpecialists: Specialist[] = [];
   appointments: Appointment[] = [];
+  cities: string[] = [];
+  companies: string[] = [];
+  selectedCity: string = '';
+  selectedCompany: string = '';
 
   ngOnInit(): void {
     this.specialistsService.getSpecialists().subscribe({
       next: (specialists) => {
         this.specialists = specialists;
-        this.filteredSpecialists = [...specialists];
+        this.cities = this.getDistinctValues(specialists.map(specialist => specialist.city));
+        this.companies = this.getDistinctValues(specialists.map(specialist => specialist.company));
+        this.applyFilters();
       },
       error: () => {
         this.showToast('No se pudieron cargar los especialistas', 'danger');
       }
     });
+  }
+
+  getDistinctValues(values: string[]): string[] {
+    return values
+      .filter((value, index) => values.indexOf(value) === index)
+      .sort((a, b) => a.localeCompare(b, 'es'));
+  }
+
+  applyFilters(): void {
+    this.filteredSpecialists = this.specialists
+      .filter(specialist =>
+        (!this.selectedCity || specialist.city === this.selectedCity) &&
+        (!this.selectedCompany || specialist.company === this.selectedCompany)
+      )
+      .sort((a, b) => a.lastName.localeCompare(b.lastName, 'es'));
+  }
+
+  clearFilters(): void {
+    this.selectedCity = '';
+    this.selectedCompany = '';
+    this.applyFilters();
   }
 
   countCities(): number {
