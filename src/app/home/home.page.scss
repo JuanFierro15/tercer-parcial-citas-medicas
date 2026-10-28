@@ -1,0 +1,147 @@
+.app-content-wrapper {
+  --background: #f4f6f9;
+}
+
+.toolbar-brand-icon {
+  font-size: 1.5rem;
+  color: var(--ion-color-secondary);
+}
+
+.header-titles {
+  display: flex;
+  flex-direction: column;
+
+  .institution-sub {
+    font-size: 0.7rem;
+    font-weight: 500;
+    opacity: 0.9;
+    letter-spacing: 0.05em;
+    text-transform: uppercase;
+  }
+
+  .page-main-title {
+    font-size: 1.05rem;
+    font-weight: 700;
+  }
+}
+
+.corte-badge {
+  font-weight: 700;
+  font-size: 0.75rem;
+  padding: 6px 10px;
+  border-radius: 6px;
+}
+
+.presentation-card {
+  margin-top: 8px;
+  border-left: 4px solid var(--ion-color-secondary);
+  border-radius: 12px;
+  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.05);
+
+  code {
+    background: #e2e8f0;
+    padding: 2px 6px;
+    border-radius: 4px;
+    color: var(--ion-color-primary);
+    font-weight: 600;
+    font-family: monospace;
+  }
+}
+
+.form-card {
+  border-radius: 12px;
+  box-shadow: 0 6px 16px rgba(0, 0, 0, 0.06);
+
+  .form-title {
+    font-size: 1.15rem;
+    font-weight: 700;
+    display: flex;
+    align-items: center;
+    gap: 8px;
+  }
+
+  .custom-input-item {
+    --padding-start: 4px;
+    --inner-padding-end: 4px;
+    margin-bottom: 8px;
+  }
+
+  .toggle-label-wrap {
+    display: flex;
+    flex-direction: column;
+
+    .toggle-help {
+      margin: 2px 0 0;
+      font-size: 0.78rem;
+      color: var(--ion-color-medium);
+    }
+  }
+
+  .terms-item {
+    --min-height: 48px;
+
+    .terms-text {
+      font-size: 0.88rem;
+      color: #334155;
+      font-weight: 500;
+    }
+  }
+
+  .modal-link-container {
+    display: flex;
+    justify-content: flex-end;
+    margin-top: -4px;
+    margin-bottom: 8px;
+  }
+
+  .submit-button {
+    font-weight: 700;
+    letter-spacing: 0.03em;
+    --box-shadow: 0 4px 14px rgba(128, 0, 32, 0.35);
+  }
+}
+
+.inspector-card {
+  border-radius: 12px;
+  border: 1px dashed #cbd5e1;
+  background-color: #ffffff;
+
+  .inspector-title {
+    font-size: 1rem;
+    font-weight: 600;
+    color: #1e293b;
+  }
+
+  .inspector-note {
+    font-size: 0.82rem;
+    color: #64748b;
+    margin-bottom: 8px;
+  }
+
+  .code-preview {
+    background: #0f172a;
+    color: #38bdf8;
+    padding: 12px;
+    border-radius: 8px;
+    font-size: 0.85rem;
+    overflow-x: auto;
+    font-family: 'Courier New', Courier, monospace;
+    margin: 0;
+  }
+}
+
+.modal-body-content {
+  h3 {
+    color: var(--ion-color-primary);
+    margin-top: 0;
+  }
+
+  .terms-list {
+    padding-left: 18px;
+    li {
+      margin-bottom: 12px;
+      font-size: 0.92rem;
+      line-height: 1.45;
+    }
+  }
+}
